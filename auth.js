@@ -1,5 +1,8 @@
-import {signUpNewUser, signInUser, postAdToDb, getAd} from './config/firebase.js';
- 
+import {signUpNewUser, signInUser, postAdToDb,uploadImage, getAdsFromDb} from './config/firebase.js';
+
+if (location.href !== ' http://127.0.0.1:5501/addDetails.html ')
+{showAd()}
+
 window.signUp = async function (){
   
     //this is for firebase auth
@@ -28,15 +31,17 @@ window.signUp = async function (){
 
 window.signIn1 = async function(){
      //1. values get karunga
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value
+    const email = document.getElementById("signIn-email").value;
+    const password = document.getElementById("signIn-password").value
 
    try{
+    const loginBtn = document.getElementById("signInbtn");
+    loginBtn.setAttribute("disabled", "");
     await signInUser(email, password)
     alert ('succy signed inn')
    }
    catch(e){
-    const errorElem = document.getElementById('error')
+    const errorElem = document.getElementById('signIn-error')
     errorElem.innerHTML = e.message
     console.log(e.message);
   }
@@ -46,10 +51,11 @@ window.postAd = async function(){
   const adTitle = document.getElementById("ad-title").value
   const description = document.getElementById("description").value
   const price = document.getElementById("price").value
-  // const form = document.getElementById("form").value
-
+  const images = document.getElementById("images").files[0];
+  
   try{
-      await postAdToDb(adTitle,description,price)
+    const imageURL = await uploadImage(images);
+      await postAdToDb(adTitle,description,price,imageURL)
       alert('ad posted')
   }
   catch(e){
@@ -58,20 +64,41 @@ window.postAd = async function(){
 }
 
 
-window.showAd = async function(){
+async function showAd(){
   try{
-    await getAd()
-    const addds = document.getElementsByClassName('container')
-    addds.innerHTML(data)
+    
+    const data = await getAdsFromDb()
+  
+    for (let item of data) {
+      const adsElem = document.getElementById("ads");
+      const ddiv = document.createElement("div");
+
+      ddiv.innerHTML += `
+      <a>
+      <div onclick="goToDetailsPage('${item.id}')" class="card " style="width: 18rem;">
+          <img src="${item.imageUrl}"  class="card-img-top" alt="...">
+          <div class="card-body">
+              <h5 class="card-title">${item.adTitle}</h5>
+              <p class="card-text">Rs ${item.adPrice}</p>
+          </div>
+      </div>
+  </a>
+`
+  adsElem.appendChild(ddiv);
+  }
   }
   catch(e){
     console.log('errorr-->', e.message)
   }
 }
 
-// window.getData = async function(){
- 
-// }
+
+window.goToDetailsPage = function (id) {
+  location.href= `/detail.html?id=${id}`
+}
+
+
+
 
 /*
 Import Export:

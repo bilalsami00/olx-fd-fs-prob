@@ -1,0 +1,28 @@
+*{
+    box-sizing: border-box;
+}
+
+.navbar .container-fluid{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start !important;   
+}
+
+.details{
+    border: 1px solid black;
+    text-align: left;
+}
+
+.price{
+    border: 1px solid black;
+    text-align: left;
+}
+
+.post-Btn{
+    color: white;
+    background-color: #072F34;
+    border: none;
+    padding: 10px 30px;
+    font-weight: bold;
+    width: 100%;
+}
